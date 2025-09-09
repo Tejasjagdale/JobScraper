@@ -1,17 +1,18 @@
-# Use the official Playwright image (browsers already installed)
-FROM mcr.microsoft.com/playwright:v1.46.0-jammy
+# Use Playwright Docker image matching your installed version
+FROM mcr.microsoft.com/playwright:v1.55.0-jammy
 
+# Set working directory
 WORKDIR /app
 
-# Copy package files and install dependencies
+# Install dependencies
 COPY package*.json ./
-RUN npm ci --omit=dev
+RUN npm install --omit=dev
 
-# Copy source code
+# Copy the rest of the code
 COPY . .
 
-# Render provides $PORT
-ENV NODE_ENV=production
-EXPOSE 10000
+# Expose the port (Render expects this)
+EXPOSE 3000
 
+# Start the server
 CMD ["node", "server.js"]
