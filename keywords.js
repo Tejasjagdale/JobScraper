@@ -33,6 +33,15 @@ export const JOB_KEYWORDS = [
   "ux",
   "web developer",
 
+  //teck stack
+  "java",
+  "python",
+  "javascript",
+  "typescript",
+  "react",
+  "react.js",
+  "reactjs",
+
   // QA & Testing
 //   "qa",
 //   "tester",
