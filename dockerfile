@@ -1,4 +1,4 @@
-# Use the official Playwright image (includes Chromium + deps)
+# Use Playwright image (includes Chromium/Firefox/WebKit already installed)
 FROM mcr.microsoft.com/playwright:v1.46.0-jammy
 
 WORKDIR /app
@@ -12,7 +12,6 @@ COPY . .
 
 # Render provides PORT; ensure we listen on it
 ENV NODE_ENV=production
-ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
 EXPOSE 10000
 
 CMD ["node", "server.js"]
