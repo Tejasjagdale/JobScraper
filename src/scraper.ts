@@ -1,23 +1,25 @@
+import { Page } from "playwright";
 import { URL } from "url";
-import { JOB_KEYWORDS, EXCLUDE_KEYWORDS } from "./keywords.js";
-import { handlePagination } from "./pagination.js";
+import { Job } from "./types.js";
+import { EXCLUDE_KEYWORDS, JOB_KEYWORDS } from "./keywords.js";
 import { closeOverlays } from "./overlayHandler.js";
-import { applyFilters } from "./filters.js";
+import { handlePagination } from "./pagination.js";
+
+
 
 /**
  * Extract jobs from links on the current page
  */
-async function extractJobsFromPage(page, baseDomain, allJobs) {
-  const links = await page.$$eval("a", (anchors) =>
+async function extractJobsFromPage(page: Page, baseDomain: string, allJobs: Set<string>): Promise<void> {
+  const links: Job[] = await page.$$eval("a", (anchors) =>
     anchors.map((a) => ({
       title: a.innerText.trim(),
-      link: a.href
+      link: a.href,
     }))
   );
 
   links.forEach((link) => {
     if (!link.link || !link.title) return;
-
     if (!link.link.startsWith(baseDomain)) return; // must be same domain
 
     const lowerText = link.title.toLowerCase();
@@ -35,26 +37,23 @@ async function extractJobsFromPage(page, baseDomain, allJobs) {
 }
 
 /**
- * Main scrapeJobs with filters + pagination
+ * Main scrapeJobs with overlays + pagination
  */
-export async function scrapeJobs(page, url) {
+export async function scrapeJobs(page: Page, url: string): Promise<Job[]> {
   const base = new URL(url);
   const domain = base.origin;
 
-  const allJobs = new Set();
+  const allJobs = new Set<string>();
 
   await page.goto(url, { waitUntil: "networkidle" });
 
   // 1. Always close overlays first
   await closeOverlays(page);
 
-  // 2. Apply filters (only once, on first page)
-//   await applyFilters(page);
-
-  // 3. Use pagination handler
+  // 2. Use pagination handler
   await handlePagination(page, async (p) => {
     await extractJobsFromPage(p, domain, allJobs);
   });
 
-  return Array.from(allJobs).map((j) => JSON.parse(j));
+  return Array.from(allJobs).map((j) => JSON.parse(j) as Job);
 }

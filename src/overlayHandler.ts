@@ -1,37 +1,37 @@
+import { Page } from "playwright";
+
 /**
- * overlayHandler.js
  * Utility to detect and close annoying popups, modals, cookie banners, overlays
  * that block interaction with the page during scraping.
  */
-
-export async function closeOverlays(page) {
+export async function closeOverlays(page: Page): Promise<void> {
   try {
     console.log("🛡️ Checking for popups / overlays...");
 
     // Common selectors for overlays / modals / cookie banners
-    const selectors = [
+    const selectors: string[] = [
       // Cookie banners
       'button:has-text("Accept")',
       'button:has-text("I Agree")',
       'button:has-text("Allow All")',
       'button:has-text("Got it")',
-      'button.cookie-accept',
-      'button.cookie-consent',
-      '#onetrust-accept-btn-handler',
+      "button.cookie-accept",
+      "button.cookie-consent",
+      "#onetrust-accept-btn-handler",
 
       // Generic close buttons
       'button:has-text("Close")',
       'button:has-text("×")',
-      '.close-button',
-      '.modal-close',
+      ".close-button",
+      ".modal-close",
       '[aria-label="Close"]',
 
       // Overlays / modals
-      'div[role="dialog"] button',
-      '.overlay button',
-      '.popup button',
-      '.consent button',
-      '.banner button'
+      "div[role='dialog'] button",
+      ".overlay button",
+      ".popup button",
+      ".consent button",
+      ".banner button",
     ];
 
     let found = false;
@@ -49,10 +49,10 @@ export async function closeOverlays(page) {
     // As a fallback, remove full-screen blocking elements directly
     await page.evaluate(() => {
       const blockers = document.querySelectorAll(
-        '.overlay, .modal-backdrop, .cookie-banner, .popup, .consent-banner'
+        ".overlay, .modal-backdrop, .cookie-banner, .popup, .consent-banner"
       );
-      blockers.forEach(el => {
-        el.style.display = 'none';
+      blockers.forEach((el) => {
+        (el as HTMLElement).style.display = "none";
         el.remove();
       });
     });
@@ -62,7 +62,7 @@ export async function closeOverlays(page) {
     } else {
       console.log("ℹ️ No blocking overlays found.");
     }
-  } catch (err) {
+  } catch (err: any) {
     console.log("⚠️ Error while handling overlays:", err.message);
   }
 }

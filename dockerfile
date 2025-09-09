@@ -1,18 +1,21 @@
-# Use Playwright Docker image matching your installed version
+# Use official Playwright image with Node
 FROM mcr.microsoft.com/playwright:v1.55.0-jammy
 
 # Set working directory
 WORKDIR /app
 
-# Install dependencies
-COPY package*.json ./
-RUN npm install --omit=dev
+# Copy package.json and install deps
+COPY package*.json tsconfig.json ./
+RUN npm install
 
-# Copy the rest of the code
-COPY . .
+# Copy source code
+COPY src ./src
 
-# Expose the port (Render expects this)
-EXPOSE 3000
+# Build TypeScript → dist
+RUN npm run build
 
-# Start the server
-CMD ["node", "server.js"]
+# Expose API port
+EXPOSE 10000
+
+# Start server
+CMD ["npm", "start"]
