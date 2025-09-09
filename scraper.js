@@ -10,17 +10,17 @@ import { applyFilters } from "./filters.js";
 async function extractJobsFromPage(page, baseDomain, allJobs) {
   const links = await page.$$eval("a", (anchors) =>
     anchors.map((a) => ({
-      text: a.innerText.trim(),
-      href: a.href
+      title: a.innerText.trim(),
+      link: a.href
     }))
   );
 
   links.forEach((link) => {
-    if (!link.href || !link.text) return;
+    if (!link.link || !link.title) return;
 
-    if (!link.href.startsWith(baseDomain)) return; // must be same domain
+    if (!link.link.startsWith(baseDomain)) return; // must be same domain
 
-    const lowerText = link.text.toLowerCase();
+    const lowerText = link.title.toLowerCase();
 
     // ✅ Must contain at least one JOB_KEYWORD
     const matchesInclude = JOB_KEYWORDS.some((kw) => lowerText.includes(kw));
